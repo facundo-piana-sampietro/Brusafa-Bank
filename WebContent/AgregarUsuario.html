@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+
+
+<%     
+    ArrayList<Provincias> provincias = (ArrayList<Provincias>) session.getAttribute("provincias");
+   	ArrayList<Localidades> localidades = (ArrayList<Localidades>) session.getAttribute("localidades"); 	
+%>
+
+<script type="text/javascript">
+	function provSeleccionada(idDdlProv, idDdlLoc){
+		class localidad {
+		  constructor(idloc, descloc, idprov) {
+		      this.idloc = idloc;
+		      this.descloc = descloc;
+		      this.idprov = idprov;  
+		  }
+		}
+
+		class localidades {
+		  constructor(){
+		    this.localidades = [];
+		  }
+		  addLocalidad(idloc, descloc, idprov){
+		    let l = new localidad(idloc, descloc, idprov);
+		    this.localidades.push(l);
+		    return l;
+		  }
+		  getLocalidad(){
+			  return this.localidades;
+		  }
+
+		}
+
+		var localidadesvar = new localidades();
+		<%for(Localidades loc : localidades){%>
+
+			var idloc ="<%= loc.getIdLocalidad_Loc() %>";
+			var descloc ="<%= loc.getDescripcion_Loc() %>";
+			var idprov ="<%= loc.getProvincia().getIdProvincia_Prov() %>";
+			localidadesvar.addLocalidad(idloc, descloc, idprov);
+
+		<%}%>
+
+		var idProv = document.getElementById(idDdlProv).value;
+		var localidadesFiltradas = new localidades();
+
+		for(l of localidadesvar.getLocalidad()){
+            if(l.idprov == idProv)
+            	localidadesFiltradas.addLocalidad(l.idloc, l.descloc, l.idprov);
+        }
+
+		var ddlLoc = document.getElementById(idDdlLoc);
+		ddlLoc.innerHTML = "";
+		var fragment = document.createDocumentFragment();
+		for(l of localidadesFiltradas.getLocalidad()) {
+			var opt = document.createElement('option');
+		    opt.innerHTML = l.descloc;
+		    opt.value = l.idloc;
+		    fragment.appendChild(opt);
+		}
+		ddlLoc.appendChild(fragment);
+	}
+</script>
+
+<body>
+
+<div class="container-fluid" style="width:60%;">
+        <div class="card text-center" style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 100px;">
+            <div class="card-header"><h5>Crear y asignar usuario</h5></div>
+            <div class="card-body" style="font-size: 13px;">
+                <form name="formAgregarUsr" method="POST" action="AgregarUsuario" class="row">  
+               	 	    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" 
+                            name="txtDNI" 
+                            class="form-control" 
+                            id="floatingInput" placeholder="-"
+                            minlength="7" 
+                            maxlength="8"
+                            placeholder="-"
+                            required
+                            >
+                            <label for="floatingInput">DNI</label>
+                        </div>
+                    </div>
+               
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="txtCUIL" class="form-control" id="floatingInput" placeholder="-" 
+                            oninput="this.value =this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" 
+                            minlength="11"
+                            maxlength="11"
+                            placeholder="-"
+                            required
+                            >
+                            <label for="floatingInput">CUIL</label>
+                        </div>
+                    </div>
+    
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="txtNombre" class="form-control" id="floatingInput" placeholder="-"  required>
+                            <label for="floatingInput">Nombre</label>
+                        </div>
+                    </div>
+               
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="txtApellido" class="form-control" id="floatingInput" placeholder="-"  required>
+                            <label for="floatingInput">Apellido</label> 
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="tel"  name="txtTelefono"class="form-control"  maxlength="9" id="floatingInput" placeholder="-" required>
+                            <label for="floatingInput">Teléfono</label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="email" name="txtEmail" class="form-control"  id="floatingInput" placeholder="-" required>
+                            <label for="floatingInput">Email</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select name="ddlTipo" id="" class="form-select" id="floatingInput" placeholder="-" required>
+                            <option value=false> Estandar </option>
+                            <option value=true> Admin </option>
+                            </select>
+                            <label for="floatingSelect">Tipo de usuario</label>
+                        </div>
+                    </div>
+               		
+               		  <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="txtUsuario" class="form-control" id="floatingInput" placeholder="-" required>
+                            <label for="floatingSelect">Usuario</label>
+                        </div>
+                    </div>
+               		
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="password" name="txtContrasenia" class="form-control" id="floatingInput" placeholder="-"  required>
+                            <label for="floatingSelect">Contraseña</label>
+                        </div>
+                    </div>
+                    <br>
+                    
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="password" name="txtContraseniaConfirm" class="form-control" id="floatingInput" placeholder="-"  required>
+                            <label for="floatingSelect">Confirmar Contraseña</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="txtDireccion" class="form-control" id="floatingInput" placeholder="-"  required>
+                            <label for="floatingSelect">Direccion</label>
+                        </div>
+                    </div>
+                
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            <input class="form-control" type="date" name="Fecha" required/>
+                            <label for="floatingSelect">Nacimiento</label>
+                        </div>
+                    </div>
+                
+                    <div class="col-md-4" >
+                        <label class="form-label">Sexo</label>
+                        <br>
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" name="rbSexo" value="MASCULINO" checked>
+                            <label class="form-check-label">Hombre</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" name="rbSexo" value="FEMENINO">
+                            <label class="form-check-label">Mujer</label>
+                        </div>
+                    </div>
+
+                    
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="txtNacionalidad" class="form-control" id="floatingInput" placeholder="-"  required>
+                            <label for="floatingSelect">Nacionalidad</label>
+                        </div>
+                    </div>
+                	             
+					<div class="col-md-6">
+                        <div class="form-floating">
+                            <select name="ddlProvincias" class="form-select" id="ddlProv" placeholder="-" onchange="provSeleccionada('ddlProv', 'ddlLoc');" >
+                                <%
+								if (provincias!=null)
+								for(Provincias prov : provincias){
+									
+									%>
+									<option value= <%= prov.getIdProvincia_Prov()%> > <%=prov.getDescripcion_Prov()%> </option>
+									<%
+								}
+								%>
+                            </select>
+                            <label for="floatingSelect">Provincia</label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select name="ddlLocalidades" id="ddlLoc" class="form-select" id="floatingInput" placeholder="-" onchange="">
+                                <% 
+								if (localidades!=null)
+								for(Localidades loc : localidades){
+									if(loc.getProvincia().getIdProvincia_Prov() == 1){
+									%>
+									<option value= <%= loc.getIdLocalidad_Loc() %>> <%= loc.getDescripcion_Loc() %></option>
+									<%
+									}
+								}
+								%>
+                            </select>
+                            <label for="floatingSelect">Localidad</label>
+                        </div>
+                    </div>
+            
+                    <div class="col-md-12">
+                        <br>
+                        <button type="submit"
+                        name="btnAgregarUsr"
+                        class="btn btn-outline-dark form-control btn-lg"
+                        >Dar de alta usuario</button>
+                    </div>
+              </form>
+
+	    		<br>
+	    	<div style="display: flex; justify-content: center;">
+				<%
+					Boolean estadoContrasenia = false;
+				    if (request.getAttribute("contraseniaEstado")!=null) {
+				    	estadoContrasenia = (boolean)request.getAttribute("contraseniaEstado");
+			    	}
+			    if (estadoContrasenia == false && request.getAttribute("estadoInsertado") != null){
+			    %>
+			        <div ID="MsgErrorDiv" style="font-size: 16px" class="col-md-12 alert alert-danger" runat="server" visible="false">
+			            <strong>Error</strong> Las contraseñas no coinciden
+			            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+			        </div>
+		        <%}%>    
+            </div>	
+            
+            <div style="display: flex; justify-content: center;">
+				<%
+					Boolean dniInvalido = false;
+				    if (request.getAttribute("dniInvalido")!=null) {
+				    	dniInvalido= (boolean)request.getAttribute("dniInvalido");
+			    	}
+			    if (dniInvalido == true && request.getAttribute("estadoInsertado") == null){
+			    %>
+			        <div ID="MsgErrorDiv" style="font-size: 16px" class="col-md-12 alert alert-danger" runat="server" visible="false">
+			            <strong>Error</strong> Debe ingresar un DNI válido
+			            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+			        </div>
+		        <%}%>    
+            </div>	
+	    		
+		    <div style="display: flex; justify-content: center;">
+				<%
+					boolean estadoInsertado=false;
+				    if (request.getAttribute("estadoInsertado")!=null) {
+				    estadoInsertado = (boolean)request.getAttribute("estadoInsertado");
+			    }
+			    if (estadoInsertado == false && request.getAttribute("estadoInsertado") != null){
+			    %>
+		        <div ID="MsgErrorDiv" style="font-size: 16px" class="col-md-12 alert alert-danger" runat="server" visible="false">
+		            <strong>Error</strong> No se pudo agregar correctamente el usuario
+		            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+		        </div>
+		        <%
+		        }
+		        else if (estadoInsertado){
+		        %>
+		        <div ID="MsgCorrectoDiv" style="font-size: 16px" class="col-md-12 alert alert-success" runat="server" visible="false">
+		            <strong>Agregado</strong> Usuario agregado correctamente!
+		            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+		        </div>
+		        <%
+		        }
+		        %>    
+            </div>
+        </div>
+	</div>
+</div>
+
+</body>
+</html>

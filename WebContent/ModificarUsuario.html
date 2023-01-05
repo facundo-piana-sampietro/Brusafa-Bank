@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+
+
+<%     
+    ArrayList<Provincias> provincias = (ArrayList<Provincias>) session.getAttribute("provincias");
+   	ArrayList<Localidades> localidades = (ArrayList<Localidades>) session.getAttribute("localidades"); 	
+%>
+
+<script type="text/javascript">
+	function provSeleccionada(idDdlProv, idDdlLoc){
+		class localidad {
+		  constructor(idloc, descloc, idprov) {
+		      this.idloc = idloc;
+		      this.descloc = descloc;
+		      this.idprov = idprov;  
+		  }
+		}
+
+		class localidades {
+		  constructor(){
+		    this.localidades = [];
+		  }
+		  addLocalidad(idloc, descloc, idprov){
+		    let l = new localidad(idloc, descloc, idprov);
+		    this.localidades.push(l);
+		    return l;
+		  }
+		  getLocalidad(){
+			  return this.localidades;
+		  }
+
+		}
+
+		var localidadesvar = new localidades();
+		<%for(Localidades loc : localidades){%>
+
+			var idloc ="<%= loc.getIdLocalidad_Loc() %>";
+			var descloc ="<%= loc.getDescripcion_Loc() %>";
+			var idprov ="<%= loc.getProvincia().getIdProvincia_Prov() %>";
+			localidadesvar.addLocalidad(idloc, descloc, idprov);
+
+		<%}%>
+
+		var idProv = document.getElementById(idDdlProv).value;
+		var localidadesFiltradas = new localidades();
+
+		for(l of localidadesvar.getLocalidad()){
+            if(l.idprov == idProv)
+            	localidadesFiltradas.addLocalidad(l.idloc, l.descloc, l.idprov);
+        }
+
+		var ddlLoc = document.getElementById(idDdlLoc);
+		ddlLoc.innerHTML = "";
+		var fragment = document.createDocumentFragment();
+		for(l of localidadesFiltradas.getLocalidad()) {
+			var opt = document.createElement('option');
+		    opt.innerHTML = l.descloc;
+		    opt.value = l.idloc;
+		    fragment.appendChild(opt);
+		}
+		ddlLoc.appendChild(fragment);
+	}
+	
+	function onLoadEdit(){
+		
+		const locs = document.getElementById('ddlLocEdit');
+		locs.value = <%= usrSeleccionadoEditar.getLocalidad_Usr().getIdLocalidad_Loc() %>;	
+		const provs = document.getElementById('ddlProvEdit');
+		provs.value = <%= usrSeleccionadoEditar.getProvincia_Usr().getIdProvincia_Prov() %>;
+	}
+
+</script>
+
+
+
+<body onload="onLoadEdit();">
+
+
+<div class="container-fluid" style="width:50%;">
+        <div class="card text-center" style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 100px;">
+            <div class="card-header"><h5>Modificar</h5></div>
+            <div class="card-body" style="font-size: 14px;">
+                <form name="formEditarUsr" method="POST" action="servletUsuarios" class="row">  
+           	 	    <div class="col-md-6">
+           	 	    	<input type="hidden" name="txtDNIEdit"  value=<%= usrSeleccionadoEditar.getDNI_Usr() %> />
+                        <div class="form-floating mb-3">
+                            <input type="text" 
+                            class="form-control" 
+                            id="floatingInput" placeholder="-"
+                            oninput="this.value =this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" 
+                            minlength="7" 
+                            maxlength="8"
+                            placeholder="-"
+                            value=<%= usrSeleccionadoEditar.getDNI_Usr() %>
+                            disabled="false"
+                            >
+                            <label for="floatingInput">DNI</label>
+                        </div>
+                    </div>
+                   
+               
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                        	<input type="hidden" name="txtCUILEdit" value= <%= usrSeleccionadoEditar.getCUIL_Usr() %> />
+                            <input type="text"  
+                            class="form-control" 
+                            id="floatingInput" 
+                            placeholder="-" 
+                            oninput="this.value =this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');" 
+                            minlength="11"
+                            maxlength="11"
+                            placeholder="-"
+                            value= <%= usrSeleccionadoEditar.getCUIL_Usr() %>
+                            disabled="false"
+                            >
+                            <label for="floatingInput">CUIL</label>
+                        </div>
+                    </div>
+      
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" 
+                           	name="txtNombreEdit"
+                            class="form-control" 
+                            id="floatingInput" 
+                            placeholder="-"
+                            value= <%= usrSeleccionadoEditar.getNombre_Usr() %> 
+                            required>
+                            <label for="floatingInput">Nombre</label>
+                        </div>
+                    </div>
+               
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="text"
+                             name="txtApellidoEdit" 
+                             class="form-control" 
+                             id="floatingInput" 
+                             placeholder="-" 
+                             value= <%= usrSeleccionadoEditar.getApellido_Usr() %>
+                             required>
+                            <label for="floatingInput">Apellido</label> 
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="tel" 
+                            name="txtTelefonoEdit"
+                            class="form-control"  
+                            id="floatingInput" 
+                            placeholder="-" 
+                            maxlength="9"
+                             value= <%= usrSeleccionadoEditar.getTelefono_Usr() %>
+                            required>
+                            <label for="floatingInput">Telï¿½fono</label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="email" 
+                            name="txtEmailEdit" 
+                            class="form-control"  
+                            id="floatingInput" 
+                            placeholder="-" 
+                            value= <%= usrSeleccionadoEditar.getEmail_Usr() %>
+                            required>
+                            <label for="floatingInput">Email</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                        	
+                            <select name="ddlTipoEdit" id="" class="form-select" id="floatingInput" placeholder="-" required>
+                            	<%
+                            		if(usrSeleccionadoEditar.isTipo_Usr()){
+                            	%>
+	                            	<option value=false selected> Estandar </option>
+	                            	<option value=true > Admin </option>
+	                            <%
+	                            } else {
+	                            %>
+	                            	<option value=false > Estandar </option>
+	                            	<option value=true selected> Admin </option>
+	                            <% 
+	                            }
+	                            %>
+	                            
+                            </select>
+                            <label for="floatingSelect">Tipo de usuario</label>
+                        </div>
+                    </div>
+                    
+                    <br>
+               		
+               		  <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" 
+                            name="txtUsuarioEdit"
+							class="form-control" 
+							id="floatingInput" 
+							placeholder="-" 
+							value= <%= usrSeleccionadoEditar.getUsuario_Usr() %>
+                            required>
+                            <label for="floatingSelect">Usuario</label>
+                        </div>
+                    </div>
+               		
+                    <div class="col-md-12">
+                        <div class="form-floating mb-3">
+                            <input type="text" 
+                            name="txtContraseniaEdit" 
+                            class="form-control" 
+                            id="floatingInput" 
+                            placeholder="-" 
+                            value= <%= usrSeleccionadoEditar.getContrasenia_Usr() %>
+                            required>
+                            <label for="floatingSelect">Contraseña</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-floating mb-3">
+                            <input type="text" 
+                            name="txtDireccionEdit" 
+                            class="form-control" 
+                            id="floatingInput" 
+                            placeholder="-" 
+                            value= <%= usrSeleccionadoEditar.getDireccion_Usr() %>
+                            required>
+                            <label for="floatingSelect">Direccion</label>
+                        </div>
+                    </div>
+               
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input class="form-control" 
+                            type="date" 
+                            name="FechaEdit" 
+					     	value=  <%= usrSeleccionadoEditar.getFechaNacimiento_Usr() %>                       
+                            required
+                            />
+                            <label for="floatingSelect">Nacimiento</label>
+                        </div>
+                    </div>
+                
+                    <div class="col-md-6" >
+                        <label class="form-label">Sexo</label>
+                        <br>
+                        <% 
+                        	String sexo = usrSeleccionadoEditar.getSexo_Usr() ;
+                        	if(sexo.equals("MASCULINO")){
+                        %>
+	                       <div class="form-check form-check-inline">
+	                            <input type="radio" class="form-check-input" name="rbSexoEdit" value="MASCULINO" checked>
+	                            <label class="form-check-label">Hombre</label>
+	                        </div>
+	                        <div class="form-check form-check-inline">
+	                            <input type="radio" class="form-check-input" name="rbSexoEdit" value="FEMENINO">
+	                            <label class="form-check-label">Mujer</label>
+	                        </div>
+                        <%}else{%>
+                        	<div class="form-check form-check-inline">
+	                            <input type="radio" class="form-check-input" name="rbSexoEdit" value="MASCULINO" >
+	                            <label class="form-check-label">Hombre</label>
+	                        </div>
+	                        <div class="form-check form-check-inline">
+	                            <input type="radio" class="form-check-input" name="rbSexoEdit" value="FEMENINO" checked>
+	                            <label class="form-check-label">Mujer</label>
+	                        </div>
+                       	<%}%>
+                    </div>
+
+                    
+                    <div class="col-md-12">
+                        <div class="form-floating mb-3">
+                            <input type="text" 
+                            name="txtNacionalidadEdit" 
+                            class="form-control" 
+                            id="floatingInput" 
+                            placeholder="-" 
+                            value=  <%= usrSeleccionadoEditar.getNacionalidad_Usr() %>   
+                            required>
+                            <label for="floatingSelect">Nacionalidad</label>
+                        </div>
+                    </div>
+                    
+                    
+                                    	             
+					<div class="col-md-6">
+                        <div class="form-floating">
+                            <select name="ddlProvinciasEdit" class="form-select" id="ddlProvEdit" placeholder="-" onchange="provSeleccionada('ddlProvEdit', 'ddlLocEdit');" >
+                                <%
+								
+								for(Provincias prov : provincias){
+									%>
+									<option value= <%= prov.getIdProvincia_Prov()%> > <%=prov.getDescripcion_Prov()%> </option>
+									<%
+								}
+								%>
+                            </select>
+                            <label for="floatingSelect">Provincia</label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select name="ddlLocalidadesEdit" id="ddlLocEdit" class="form-select" id="floatingInput" placeholder="-">
+                                <% 
+								
+								for(Localidades loc : localidades){
+									if(loc.getProvincia().getIdProvincia_Prov() == usrSeleccionadoEditar.getProvincia_Usr().getIdProvincia_Prov()){
+									%>
+									<option value= <%= loc.getIdLocalidad_Loc() %>> <%= loc.getDescripcion_Loc() %></option>
+									<%
+									}
+								}
+								%>
+                            </select>
+                            <label for="floatingSelect">Localidad</label>
+                        </div>
+                    </div>
+            		<br>
+            		<div class="col-md-6">
+                        <br>
+                        <button type="submit"
+                         name="btnCancelar"
+                          class="btn btn-outline-secondary form-control btn-lg"
+                          onclick="return confirm('¿Está seguro de que quiere cancelar la modificacion?')">Cancelar</button>
+                    </div>
+                    <div class="col-md-6">
+                        <br>
+                        <button type="submit"
+                        name="btnModificar"
+                        class="btn btn-outline-dark form-control btn-lg"
+                        onclick="return confirm('¿Está seguro de que quiere modificar el usuario?')">Modificar</button>
+                    </div>
+              </form>
+            </div>
+        </div>
+	</div>
+</body>
+</html>
